@@ -1,10 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<!-- Logout Modal -->
-@include('admin.components.logout-modal')
-<!-- Logout Modal -->
-
+<html lang="id">
 <!-- Head Section -->
 @include('admin.partials.head')
 <!-- Head Section -->
@@ -29,6 +24,10 @@
         <!-- Footer Section -->
     </div>
     <!-- Main Content -->
+
+    <!-- Logout Modal -->
+    @include('admin.components.logout-modal')
+    <!-- Logout Modal -->
 
     <!-- Script Section -->
     @include('admin.partials.script')

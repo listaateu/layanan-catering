@@ -22,6 +22,26 @@ class Order extends Model
         'status_pesanan',
     ];
 
+    protected $casts = [
+        'tanggal_acara' => 'date',
+    ];
+
+    // Teks status yang enak dibaca: "menunggu_pembayaran" -> "Menunggu Pembayaran"
+    public function getStatusLabelAttribute()
+    {
+        return ucwords(str_replace('_', ' ', $this->status_pesanan));
+    }
+
+    // Warna badge Spark: pending / success / failed
+    public function getStatusBadgeAttribute()
+    {
+        return match ($this->status_pesanan) {
+            'menunggu_pembayaran', 'menunggu_verifikasi' => 'pending',
+            'dibatalkan' => 'failed',
+            default => 'success',
+        };
+    }
+
     public function customer()
     {
         return $this->belongsTo(User::class, 'id_customer', 'id_user');

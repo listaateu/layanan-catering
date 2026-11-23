@@ -21,6 +21,10 @@ class Payment extends Model
         'tanggal_verifikasi',
     ];
 
+    protected $casts = [
+        'tanggal_verifikasi' => 'date',
+    ];
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'id_order', 'id_order');

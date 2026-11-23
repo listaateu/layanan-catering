@@ -26,10 +26,13 @@ class PaketController extends Controller
         $data = $request->validate([
             'nama_paket'   => 'required|string|max:255',
             'deskripsi'    => 'nullable|string',
-            'harga_porsi'  => 'required|numeric|min:0',
+            'harga_porsi'  => 'required|numeric|min:1',
             'min_porsi'    => 'required|integer|min:1',
             'gambar_paket' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status_aktif' => 'required|in:aktif,nonaktif',
+        ], [
+            'harga_porsi.min' => 'Harga per porsi harus lebih dari 0',
+            'min_porsi.min' => 'Minimal porsi harus lebih dari 0',
         ]);
 
         if ($request->hasFile('gambar_paket')) {
@@ -38,11 +41,12 @@ class PaketController extends Controller
 
         CateringPackage::create($data);
 
-        return redirect()->route('admin.paket.index')->with('success', 'Paket menu baru berhasil ditambahkan');
+        return redirect()->route('admin.paket')->with('success', 'Paket menu baru berhasil ditambahkan');
     }
 
-    public function edit(CateringPackage $paket)
+    public function edit($id)
     {
+        $paket = CateringPackage::findOrFail($id);
         return view('admin.pages.paket.update', compact('paket'));
     }
 
@@ -51,10 +55,13 @@ class PaketController extends Controller
         $data = $request->validate([
             'nama_paket'   => 'required|string|max:255',
             'deskripsi'    => 'nullable|string',
-            'harga_porsi'  => 'required|numeric|min:0',
+            'harga_porsi'  => 'required|numeric|min:1',
             'min_porsi'    => 'required|integer|min:1',
             'gambar_paket' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status_aktif' => 'required|in:aktif,nonaktif',
+        ], [
+            'harga_porsi.min' => 'Harga per porsi harus lebih dari 0',
+            'min_porsi.min' => 'Minimal porsi harus lebih dari 0',
         ]);
 
         if ($request->hasFile('gambar_paket')) {
@@ -70,7 +77,7 @@ class PaketController extends Controller
 
         $paket->update($data);
 
-        return redirect()->route('admin.paket.index')->with('success', 'Paket menu berhasil diubah');
+        return redirect()->route('admin.paket')->with('success', 'Paket menu berhasil diubah');
     }
 
     public function destroy(CateringPackage $paket)
@@ -78,7 +85,7 @@ class PaketController extends Controller
         try {
             $paket->delete();
         } catch (QueryException $e) {
-            return redirect()->route('admin.paket.index')
+            return redirect()->route('admin.paket')
                 ->with('error', 'Paket tidak bisa dihapus karena sudah dipakai di pesanan');
         }
 
@@ -86,6 +93,6 @@ class PaketController extends Controller
             Storage::disk('public')->delete($paket->gambar_paket);
         }
 
-        return redirect()->route('admin.paket.index')->with('success', 'Paket menu berhasil dihapus');
+        return redirect()->route('admin.paket')->with('success', 'Paket menu berhasil dihapus');
     }
 }

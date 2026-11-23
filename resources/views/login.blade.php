@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="id">
 @include('admin.partials.head')
 <style>
     :root {
@@ -14,59 +12,67 @@
     }
 
     body {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
         font-family: var(--mulish), sans-serif;
-        background: linear-gradient(135deg, #fff1f5 0%, #fde4ec 50%, #f9d3df 100%);
-        position: relative;
-        overflow-x: hidden;
+        background-color: var(--cream);
     }
 
-    body::before,
-    body::after {
-        content: '';
-        position: absolute;
-        border-radius: 50%;
-        z-index: 0;
+    /* ===== Sisi kiri: foto catering ===== */
+    .foto {
+        min-height: 100vh;
+        background-color: var(--berry);
+        /* lapisan gelap di atas foto supaya tulisan putih tetap terbaca */
+        background-image:
+            linear-gradient(rgba(90, 25, 50, 0.55), rgba(60, 15, 35, 0.8)),
+            url('{{ asset("admin/spark/assets/images/login-catering.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
-    body::before {
-        width: 320px;
-        height: 320px;
-        background: rgba(244, 184, 200, 0.45);
-        top: -90px;
-        left: -90px;
+    .foto-brand {
+        font-family: var(--playfair), serif;
+        font-size: 22px;
+        font-weight: 700;
     }
 
-    body::after {
-        width: 260px;
-        height: 260px;
-        background: rgba(217, 114, 143, 0.22);
-        bottom: -80px;
-        right: -70px;
+    .foto-judul {
+        font-family: var(--playfair), serif;
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.25;
+        max-width: 460px;
+        margin-bottom: 12px;
     }
 
-    .wrapper {
-        position: relative;
-        z-index: 1;
-        width: 100%;
+    .foto-sub {
+        font-size: 15px;
+        max-width: 420px;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    /* ===== Sisi kanan: form ===== */
+    .sisi-form {
+        min-height: 100vh;
+        padding: 24px;
     }
 
     .login {
-        background-color: var(--cream);
-        border: 2px solid var(--soft-pink);
-        box-shadow: 0 20px 45px rgba(217, 114, 143, 0.25);
+        width: 100%;
+        max-width: 380px;
     }
 
     .logo {
-        width: 76px;
-        height: 76px;
-        margin: 0 auto;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--soft-pink), var(--rose));
         color: white;
-        font-size: 34px;
+        font-size: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -77,16 +83,12 @@
         font-family: var(--playfair), serif;
         color: var(--berry);
         font-weight: 700;
-        font-size: 26px;
+        font-size: 28px;
     }
 
     .sub {
         color: var(--rose);
-        font-size: 13px;
-    }
-
-    form {
-        padding: 5px;
+        font-size: 14px;
     }
 
     .input-group-text {
@@ -123,6 +125,13 @@
         border-color: var(--rose);
     }
 
+    /* pesan error di bawah input */
+    .pesan-error {
+        color: #b3261e;
+        font-size: 12px;
+        margin: -8px 0 12px 4px;
+    }
+
     .alert-danger,
     .alert-success {
         background-color: var(--blush);
@@ -157,14 +166,25 @@
 </style>
 
 <body>
-    <div class="wrapper">
-        <div class="col-md-4 col-sm-8 p-3 mx-auto align-content-center">
-            <div class="login p-4 rounded rounded-5">
-                <div class="text-center mt-2 mb-4">
-                    <div class="logo bi bi-cup-hot-fill"></div>
-                    <h1 class="judul mt-3 mb-1">Layanan Catering</h1>
-                    <p class="sub mb-0">Silakan masuk untuk melanjutkan</p>
-                </div>
+    <div class="row g-0 min-vh-100">
+        <!-- Kiri: foto (disembunyikan di layar kecil) -->
+        <div class="col-lg-7 d-none d-lg-flex foto">
+            <div class="foto-brand">
+                <i class="bi bi-cup-hot-fill me-2"></i>Layanan Catering
+            </div>
+            <div>
+                <h2 class="foto-judul">Hidangan untuk setiap acara, tertata dalam satu tempat.</h2>
+                <p class="foto-sub">Kelola paket menu, pesanan, pembayaran, dan produksi dapur dengan mudah.</p>
+            </div>
+        </div>
+        <!-- Kiri -->
+
+        <!-- Kanan: form login -->
+        <div class="col-lg-5 d-flex align-items-center justify-content-center sisi-form">
+            <div class="login">
+                <div class="logo bi bi-cup-hot-fill d-lg-none mb-3"></div>
+                <h1 class="judul mb-1">Selamat Datang</h1>
+                <p class="sub mb-4">Silakan masuk untuk melanjutkan</p>
 
                 <form id="content" action="{{ route('authenticate') }}" method="post">
                     @csrf
@@ -172,19 +192,26 @@
                         <span class="input-group-text bi bi-envelope"></span>
                         <input class="form form-control" type="email" name="email" value="{{ old('email') }}" placeholder="Email">
                     </div>
+                    @error('email')
+                    <div class="pesan-error">{{ $message }}</div>
+                    @enderror
+
                     <div class="input-group mb-3">
                         <span class="input-group-text bi bi-lock"></span>
                         <input class="form form-control" type="password" name="password" placeholder="Password">
                     </div>
+                    @error('password')
+                    <div class="pesan-error">{{ $message }}</div>
+                    @enderror
+
                     @include('admin.components.alert')
-                    <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn w-100 mt-2 bi bi-box-arrow-in-right"><span class="mx-2">Sign In</span></button>
-                    </div>
+                    <button type="submit" class="btn w-100 mt-2 bi bi-box-arrow-in-right"><span class="mx-2">Sign In</span></button>
                 </form>
 
                 <p class="footer-text text-center mt-4 mb-0">&copy; {{ date('Y') }} Layanan Catering</p>
             </div>
         </div>
+        <!-- Kanan -->
     </div>
+    @include('admin.partials.script')
 </body>
-</html>

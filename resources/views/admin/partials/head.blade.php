@@ -17,6 +17,11 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
+    <!-- Sweetalert2 -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.min.css" />
+
     <!-- Local Style -->
     <link rel="stylesheet" href="{{asset('admin/spark/assets/css/main.css')}}" />
 </head>

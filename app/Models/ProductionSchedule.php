@@ -18,6 +18,21 @@ class ProductionSchedule extends Model
         'status_produksi',
     ];
 
+    // Teks status yang enak dibaca: "sedang_dimasak" -> "Sedang Dimasak"
+    public function getStatusLabelAttribute()
+    {
+        return ucwords(str_replace('_', ' ', $this->status_produksi));
+    }
+
+    // Warna badge Spark: pending / success / failed
+    public function getStatusBadgeAttribute()
+    {
+        return match ($this->status_produksi) {
+            'antrean_dapur', 'sedang_dimasak' => 'pending',
+            default => 'success',
+        };
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'id_order', 'id_order');
