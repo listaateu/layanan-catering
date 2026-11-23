@@ -22,7 +22,7 @@
         background-color: var(--berry);
         /* lapisan gelap di atas foto supaya tulisan putih tetap terbaca */
         background-image:
-            linear-gradient(rgba(90, 25, 50, 0.55), rgba(60, 15, 35, 0.8)),
+            linear-gradient(rgba(255, 255, 255, 0.55), rgba(60, 15, 35, 0.8)),
             url('{{ asset("admin/spark/assets/images/login-catering.jpg") }}');
         background-size: cover;
         background-position: center;

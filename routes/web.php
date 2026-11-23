@@ -27,7 +27,7 @@ Route::prefix('login')->group(function () {
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Admin Kasir
-Route::prefix('admin')->as('admin.')->middleware([CekAdminKasir::class])->group(function () {
+Route::prefix('admin-kasir')->as('admin.')->middleware([CekAdminKasir::class])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::prefix('paket')->group(function () {
         Route::get('/', [AdminPaketController::class, 'index'])->name('paket');
@@ -52,21 +52,4 @@ Route::prefix('admin')->as('admin.')->middleware([CekAdminKasir::class])->group(
     Route::prefix('produksi')->group(function () {
         Route::get('/', [AdminProduksiController::class, 'index'])->name('produksi');
     });
-});
-
-// Kepala Dapur
-Route::prefix('dapur')->as('dapur.')->middleware([CekKepalaDapur::class])->group(function () {
-    Route::get('/', [DapurDashboardController::class, 'index'])->name('dashboard');
-    Route::prefix('produksi')->group(function () {
-        Route::get('/', [DapurProduksiController::class, 'index'])->name('produksi');
-        Route::get('/show/{id}', [DapurProduksiController::class, 'show'])->name('produksi.show');
-        Route::put('/update/{produksi}', [DapurProduksiController::class, 'update'])->name('produksi.update');
-    });
-});
-
-// Pelanggan
-Route::prefix('pelanggan')->as('pelanggan.')->middleware([CekPelanggan::class])->group(function () {
-    Route::get('/', function () {
-        return 'Halaman pelanggan belum dibuat. <a href="' . route('logout') . '">Logout</a>';
-    })->name('dashboard');
 });
