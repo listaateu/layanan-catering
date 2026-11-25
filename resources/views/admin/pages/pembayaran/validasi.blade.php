@@ -1,11 +1,6 @@
 @extends('admin.index')
 
 @section('content')
-@php
-    $buktiAda = $pembayaran->bukti_transfer
-        && \Illuminate\Support\Facades\Storage::disk('public')->exists($pembayaran->bukti_transfer);
-    $selisih = (float) $pembayaran->jumlah_transfer !== (float) $pembayaran->order->total_bayar;
-@endphp
 <div>
     <div class="page-header">
         <div>
@@ -15,7 +10,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}" class="text-decoration-none text-muted-green">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{route('admin.pembayaran')}}" class="text-decoration-none text-muted-green">Pembayaran</a></li>
+                <li class="breadcrumb-item"><a href="{{route('admin.pembayaran.table')}}" class="text-decoration-none text-muted-green">Pembayaran</a></li>
                 <li class="breadcrumb-item active text-main" aria-current="page">Validasi</li>
             </ol>
         </nav>
@@ -26,7 +21,7 @@
         <div class="col-12 col-lg-5">
             <div class="card border-light shadow-sm p-4 h-100">
                 <h5 class="card-title mb-4">Bukti Transfer</h5>
-                @if ($buktiAda)
+                @if ($pembayaran->bukti_transfer)
                 <a href="{{asset('storage/' . $pembayaran->bukti_transfer)}}" target="_blank">
                     <img src="{{asset('storage/' . $pembayaran->bukti_transfer)}}" alt="Bukti transfer" class="img-fluid rounded">
                 </a>
@@ -59,8 +54,8 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label-custom">Jumlah Transfer</label>
-                            <input type="text" class="form-control-custom {{$selisih ? 'is-invalid-custom' : ''}}" value="Rp {{number_format($pembayaran->jumlah_transfer, 0, ',', '.')}}" readonly>
-                            @if ($selisih)
+                            <input type="text" class="form-control-custom {{$pembayaran->jumlah_transfer != $pembayaran->order->total_bayar ? 'is-invalid-custom' : ''}}" value="Rp {{number_format($pembayaran->jumlah_transfer, 0, ',', '.')}}" readonly>
+                            @if ($pembayaran->jumlah_transfer != $pembayaran->order->total_bayar)
                             <div class="form-feedback-custom invalid-custom"><i class="bi bi-exclamation-circle-fill"></i> Jumlah transfer berbeda dengan total tagihan.</div>
                             @endif
                         </div>
@@ -89,15 +84,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="status_verifikasi" class="form-label-custom">Keputusan</label>
-                        <select class="form-select-custom @error('status_verifikasi') is-invalid-custom @enderror" name="status_verifikasi" id="status_verifikasi" required>
+                        <label for="status_verifikasi" class="form-label-custom">Keputusan <span class="text-danger">*</span></label>
+                        <select class="form-select-custom" name="status_verifikasi" id="status_verifikasi" required>
                             <option value="" disabled selected>Pilih keputusan</option>
                             <option value="diterima">Diterima</option>
                             <option value="ditolak">Ditolak</option>
                         </select>
-                        @error('status_verifikasi')
-                        <div class="form-feedback-custom invalid-custom"><i class="bi bi-exclamation-circle-fill"></i> {{$message}}</div>
-                        @enderror
                     </div>
 
                     <div class="mb-3">
@@ -106,7 +98,7 @@
                     </div>
 
                     <div class="d-flex gap-2 justify-content-end">
-                        <a href="{{route('admin.pembayaran')}}" class="btn-custom btn-custom-light">Kembali</a>
+                        <a href="{{route('admin.pembayaran.table')}}" class="btn-custom btn-custom-light">Kembali</a>
                         <button type="submit" class="btn-custom btn-custom-primary">Konfirmasi</button>
                     </div>
                 </form>

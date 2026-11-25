@@ -10,7 +10,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <a href="{{ route('logout') }}" class="btn btn-danger">Ya, Logout</a>
+                {{-- logout harus lewat form POST (bukan link biasa) karena route logout memakai Route::post --}}
+                {{-- @csrf = kunci keamanan yang wajib ada di setiap form POST --}}
+                <form action="{{ route('logout') }}" method="post" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Ya, Logout</button>
+                </form>
             </div>
         </div>
     </div>

@@ -11,7 +11,8 @@
         </button>
     </div>
 
-    <div class="navbar-actions">
+    {{-- navbar ini memakai grid 3 kolom, grid-column: 3 = taruh profil di kolom paling kanan --}}
+    <div class="navbar-actions ms-auto" style="grid-column: 3;">
         <!-- Profile -->
         <div class="dropdown ms-2">
             <button class="navbar-profile-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"

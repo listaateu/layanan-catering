@@ -1,3 +1,6 @@
+{{-- Ini layout utama admin. Semua halaman admin memakai @extends('admin.index') --}}
+{{-- @include = menyisipkan potongan template (partials/components) ke sini --}}
+{{-- @yield('content') = tempat isi halaman yang berbeda-beda (diisi lewat @section('content') di tiap halaman) --}}
 <!doctype html>
 <html lang="id">
 <!-- Head Section -->

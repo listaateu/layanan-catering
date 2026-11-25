@@ -1,14 +1,6 @@
 @extends('admin.index')
 
 @section('content')
-@php
-    $daftarStatus = [
-        'antrean_dapur' => 'Antrean Dapur',
-        'sedang_dimasak' => 'Sedang Dimasak',
-        'siap_kirim' => 'Siap Kirim',
-        'terkirim' => 'Terkirim',
-    ];
-@endphp
 <div>
     <div class="page-header">
         <div>
@@ -29,13 +21,15 @@
             <div class="table-filter-group">
                 <div class="dropdown">
                     <button class="btn-table-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-funnel"></i> {{ $daftarStatus[$status] ?? 'Semua Status' }}
+                        <i class="bi bi-funnel"></i> <span class="text-capitalize">{{ $status ? str_replace('_', ' ', $status) : 'Semua Status' }}</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{route('admin.produksi')}}">Semua Status</a></li>
-                        @foreach ($daftarStatus as $key => $label)
-                        <li><a class="dropdown-item" href="{{route('admin.produksi', ['status' => $key])}}">{{$label}}</a></li>
-                        @endforeach
+                        <li><a class="dropdown-item" href="{{route('admin.produksi.table')}}">Semua Status</a></li>
+                        {{-- pilihan filter status, statusnya dikirim lewat alamat (?status=...) --}}
+                        <li><a class="dropdown-item" href="{{route('admin.produksi.table', ['status' => 'antrean_dapur'])}}">Antrean Dapur</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.produksi.table', ['status' => 'sedang_dimasak'])}}">Sedang Dimasak</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.produksi.table', ['status' => 'siap_kirim'])}}">Siap Kirim</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.produksi.table', ['status' => 'terkirim'])}}">Terkirim</a></li>
                     </ul>
                 </div>
             </div>
@@ -55,6 +49,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- loop semua jadwal produksi di halaman ini --}}
                     @forelse ($produksi as $item)
                     <tr>
                         <td>{{$loop->iteration}}</td>
@@ -65,7 +60,7 @@
                             @endforeach
                         </td>
                         <td>
-                            {{$item->order->tanggal_acara->locale('id')->translatedFormat('d F Y')}}
+                            {{$item->order->tanggal_acara->format('d-m-Y')}}
                             <div class="table-user-sub">Pukul {{substr($item->order->jam_kirim, 0, 5)}}</div>
                         </td>
                         <td><span class="badge-table {{$item->status_badge}}">{{$item->status_label}}</span></td>

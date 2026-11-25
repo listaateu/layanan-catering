@@ -8,16 +8,21 @@ use Illuminate\Http\Request;
 
 class ProduksiController extends Controller
 {
-    // Admin hanya memantau antrean dapur (baca saja). Yang mengubah status adalah kepala dapur.
+    // index -> menampilkan halaman utama (antrean dapur)
+    // admin hanya memantau (baca saja), yang mengubah status adalah kepala dapur
+    // makanya di controller ini hanya ada function index
     public function index(Request $request)
     {
-        $status = $request->query('status');
+        // ambil status dari alamat, contoh: ?status=sedang_dimasak
+        $status = $request->status;
 
-        $produksi = ProductionSchedule::with('order.customer', 'order.items.package', 'handler')
-            ->when($status, fn ($query) => $query->where('status_produksi', $status))
-            ->get()
-            ->sortBy(fn ($item) => $item->order->tanggal_acara->format('Y-m-d') . ' ' . $item->order->jam_kirim)
-            ->values();
+        // kalau ada status yang dipilih, tampilkan yang statusnya sama saja
+        // kalau tidak ada, tampilkan semua jadwal produksi
+        if ($status) {
+            $produksi = ProductionSchedule::where('status_produksi', $status)->get();
+        } else {
+            $produksi = ProductionSchedule::get();
+        }
 
         return view('admin.pages.produksi.produksi', compact('produksi', 'status'));
     }

@@ -10,7 +10,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}" class="text-decoration-none text-muted-green">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{route('admin.pesanan')}}" class="text-decoration-none text-muted-green">Pesanan</a></li>
+                <li class="breadcrumb-item"><a href="{{route('admin.pesanan.table')}}" class="text-decoration-none text-muted-green">Pesanan</a></li>
                 <li class="breadcrumb-item active text-main" aria-current="page">Detail</li>
             </ol>
         </nav>
@@ -31,7 +31,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label-custom">Tanggal Acara</label>
-                        <input type="text" class="form-control-custom" value="{{$pesanan->tanggal_acara->locale('id')->translatedFormat('d F Y')}}" readonly>
+                        <input type="text" class="form-control-custom" value="{{$pesanan->tanggal_acara->format('d-m-Y')}}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label-custom">Jam Kirim</label>
@@ -72,7 +72,7 @@
                         value="{{ $pesanan->productionSchedule ? ucwords(str_replace('_', ' ', $pesanan->productionSchedule->status_produksi)) : 'Belum masuk antrean' }}" readonly>
                 </div>
                 @if (in_array($pesanan->status_pesanan, ['menunggu_pembayaran', 'menunggu_verifikasi', 'terkonfirmasi']))
-                <form action="{{route('admin.pesanan.batal', $pesanan->id_order)}}" method="post" onsubmit="return alertConfirm(event, this, 'Pesanan akan dibatalkan dan tidak bisa diproses lagi', 'Apakah anda yakin?')">
+                <form action="{{route('admin.pesanan.batal', $pesanan->id_order)}}" method="post" onsubmit="return confirm('Pesanan akan dibatalkan dan tidak bisa diproses lagi. Apakah anda yakin?')">
                     @csrf
                     @method('PUT')
                     <button type="submit" class="btn-custom btn-custom-outline-danger">
@@ -112,7 +112,7 @@
             </table>
         </div>
         <div class="table-footer-control">
-            <a href="{{route('admin.pesanan')}}" class="btn-custom btn-custom-light"><i class="bi bi-arrow-left"></i> Kembali</a>
+            <a href="{{route('admin.pesanan.table')}}" class="btn-custom btn-custom-light"><i class="bi bi-arrow-left"></i> Kembali</a>
             <strong>Total: Rp {{number_format($pesanan->total_bayar, 0, ',', '.')}}</strong>
         </div>
     </div>

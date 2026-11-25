@@ -33,13 +33,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- loop semua pembayaran di halaman ini --}}
                     @forelse ($pembayaran as $item)
                     <tr>
                         <td>{{$loop->iteration}}</td>
                         <td class="table-order-id">{{$item->order->kode_order}}</td>
                         <td>{{$item->order->customer->nama}}</td>
                         <td class="table-amount">Rp {{number_format($item->jumlah_transfer, 0, ',', '.')}}</td>
-                        <td>{{$item->created_at->locale('id')->translatedFormat('d F Y, H:i')}}</td>
+                        <td>{{$item->created_at->format('d-m-Y H:i')}}</td>
                         <td>
                             <span class="badge-table {{ $item->status_verifikasi == 'diterima' ? 'success' : ($item->status_verifikasi == 'ditolak' ? 'failed' : 'pending') }}">
                                 {{ucfirst($item->status_verifikasi)}}

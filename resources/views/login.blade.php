@@ -192,17 +192,11 @@
                         <span class="input-group-text bi bi-envelope"></span>
                         <input class="form form-control" type="email" name="email" value="{{ old('email') }}" placeholder="Email">
                     </div>
-                    @error('email')
-                    <div class="pesan-error">{{ $message }}</div>
-                    @enderror
 
                     <div class="input-group mb-3">
                         <span class="input-group-text bi bi-lock"></span>
                         <input class="form form-control" type="password" name="password" placeholder="Password">
                     </div>
-                    @error('password')
-                    <div class="pesan-error">{{ $message }}</div>
-                    @enderror
 
                     @include('admin.components.alert')
                     <button type="submit" class="btn w-100 mt-2 bi bi-box-arrow-in-right"><span class="mx-2">Sign In</span></button>

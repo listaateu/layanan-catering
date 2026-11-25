@@ -18,33 +18,27 @@
                     </a>
                 </li>
                 <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-link {{request()->routeIs('admin.paket*') ? 'active' : ''}}" href="{{route('admin.paket')}}">
+                    <a class="sidebar-menu-link {{request()->routeIs('admin.paket*') ? 'active' : ''}}" href="{{route('admin.paket.table')}}">
                         <i class="bi bi-box-seam-fill"></i>
                         <span>Paket Menu</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-link {{request()->routeIs('admin.pesanan*') ? 'active' : ''}}" href="{{route('admin.pesanan')}}">
+                    <a class="sidebar-menu-link {{request()->routeIs('admin.pesanan*') ? 'active' : ''}}" href="{{route('admin.pesanan.table')}}">
                         <i class="bi bi-receipt"></i>
                         <span>Pesanan</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-link {{request()->routeIs('admin.pembayaran*') ? 'active' : ''}}" href="{{route('admin.pembayaran')}}">
+                    <a class="sidebar-menu-link {{request()->routeIs('admin.pembayaran*') ? 'active' : ''}}" href="{{route('admin.pembayaran.table')}}">
                         <i class="bi bi-cash-stack"></i>
                         <span>Pembayaran</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-link {{request()->routeIs('admin.produksi*') ? 'active' : ''}}" href="{{route('admin.produksi')}}">
+                    <a class="sidebar-menu-link {{request()->routeIs('admin.produksi*') ? 'active' : ''}}" href="{{route('admin.produksi.table')}}">
                         <i class="bi bi-fire"></i>
                         <span>Produksi</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                        <i class="bi bi-door-open-fill"></i>
-                        <span>Logout</span>
                     </a>
                 </li>
             </ul>

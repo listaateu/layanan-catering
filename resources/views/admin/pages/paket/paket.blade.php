@@ -39,16 +39,18 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- forelse = perulangan seperti foreach, tapi kalau datanya kosong akan menjalankan empty --}}
                     @forelse ($paket as $item)
                     <tr>
                         <td class="table-order-id">{{$loop->iteration}}</td>
                         <td>
                             <div class="table-user-cell">
+                                {{-- kalau paket punya gambar tampilkan dari storage (butuh php artisan storage:link), kalau tidak pakai gambar default --}}
                                 <img src="{{ $item->gambar_paket ? asset('storage/' . $item->gambar_paket) : asset('admin/spark/assets/images/avatar.png') }}"
                                     alt="{{$item->nama_paket}}" class="table-user-avatar" style="object-fit: cover;">
                                 <div>
                                     <div class="table-user-name">{{$item->nama_paket}}</div>
-                                    <div class="table-user-sub">{{ \Illuminate\Support\Str::limit($item->deskripsi, 50) }}</div>
+                                    <div class="table-user-sub">{{ Str::limit($item->deskripsi, 50) }}</div>
                                 </div>
                             </div>
                         </td>
@@ -64,8 +66,10 @@
                                 <a href="{{route('admin.paket.edit', $item->id_paket)}}" class="table-btn-action" title="Ubah data">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form action="{{route('admin.paket.destroy', $item->id_paket)}}" method="post" onsubmit="return alertConfirm(event, this, 'Data paket akan dihapus', 'Apakah anda yakin?')">
+                                {{-- onsubmit confirm(): muncul kotak OK / Cancel, kalau Cancel form tidak jadi dikirim --}}
+                                <form action="{{route('admin.paket.destroy', $item->id_paket)}}" method="post" onsubmit="return confirm('Data paket akan dihapus. Apakah anda yakin?')">
                                     @csrf
+                                    {{-- HTML form hanya bisa GET dan POST, jadi method('DELETE') dipakai supaya terbaca sebagai DELETE --}}
                                     @method('DELETE')
                                     <button type="submit" class="table-btn-action delete" title="Hapus data">
                                         <i class="bi bi-trash"></i>

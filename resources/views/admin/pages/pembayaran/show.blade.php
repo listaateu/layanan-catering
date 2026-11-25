@@ -1,10 +1,6 @@
 @extends('admin.index')
 
 @section('content')
-@php
-    $buktiAda = $pembayaran->bukti_transfer
-        && \Illuminate\Support\Facades\Storage::disk('public')->exists($pembayaran->bukti_transfer);
-@endphp
 <div>
     <div class="page-header">
         <div>
@@ -14,7 +10,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}" class="text-decoration-none text-muted-green">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{route('admin.pembayaran')}}" class="text-decoration-none text-muted-green">Pembayaran</a></li>
+                <li class="breadcrumb-item"><a href="{{route('admin.pembayaran.table')}}" class="text-decoration-none text-muted-green">Pembayaran</a></li>
                 <li class="breadcrumb-item active text-main" aria-current="page">Detail</li>
             </ol>
         </nav>
@@ -25,7 +21,7 @@
         <div class="col-12 col-lg-5">
             <div class="card border-light shadow-sm p-4 h-100">
                 <h5 class="card-title mb-4">Bukti Transfer</h5>
-                @if ($buktiAda)
+                @if ($pembayaran->bukti_transfer)
                 <a href="{{asset('storage/' . $pembayaran->bukti_transfer)}}" target="_blank">
                     <img src="{{asset('storage/' . $pembayaran->bukti_transfer)}}" alt="Bukti transfer" class="img-fluid rounded">
                 </a>
@@ -68,7 +64,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label-custom">Tanggal Verifikasi</label>
-                        <input type="text" class="form-control-custom" value="{{$pembayaran->tanggal_verifikasi?->locale('id')->translatedFormat('d F Y') ?? '-'}}" readonly>
+                        <input type="text" class="form-control-custom" value="{{$pembayaran->tanggal_verifikasi ? $pembayaran->tanggal_verifikasi->format('d-m-Y') : '-'}}" readonly>
                     </div>
                 </div>
 
@@ -95,7 +91,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <a href="{{route('admin.pembayaran')}}" class="btn-custom btn-custom-light">Kembali</a>
+                    <a href="{{route('admin.pembayaran.table')}}" class="btn-custom btn-custom-light">Kembali</a>
                 </div>
             </div>
         </div>

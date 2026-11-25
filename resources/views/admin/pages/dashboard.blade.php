@@ -6,13 +6,13 @@
     <div class="page-header">
         <div>
             <h1 class="page-title">Selamat Datang, {{auth()->user()->nama}}</h1>
-            <p class="page-subtitle">{{ today()->locale('id')->translatedFormat('d F Y') }}</p>
+            <p class="page-subtitle">{{ date('d-m-Y') }}</p>
         </div>
     </div>
     <!-- Selamat Datang -->
     <!-- Card Info -->
     <div class="row mx-2 my-4">
-        <div class="col-md-6 col-xl-3 my-2">
+        <div class="col-md-6 col-xxl-3 my-2">
             <div class="card">
                 <div class="card-body d-flex justify-content-start">
                     <div class="icon bg-success d-flex rounded p-3 me-3">
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3 my-2">
+        <div class="col-md-6 col-xxl-3 my-2">
             <div class="card">
                 <div class="card-body d-flex justify-content-start">
                     <div class="icon bg-primary d-flex rounded p-3 me-3">
@@ -38,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3 my-2">
+        <div class="col-md-6 col-xxl-3 my-2">
             <div class="card">
                 <div class="card-body d-flex justify-content-start">
                     <div class="icon bg-warning d-flex rounded p-3 me-3">
@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3 my-2">
+        <div class="col-md-6 col-xxl-3 my-2">
             <div class="card">
                 <div class="card-body d-flex justify-content-start">
                     <div class="icon bg-info d-flex rounded p-3 me-3">
@@ -72,7 +72,7 @@
             <div class="table-card-custom">
                 <div class="table-header-control">
                     <h5 class="mb-0">Pesanan Terbaru</h5>
-                    <a href="{{route('admin.pesanan')}}" class="btn-custom btn-custom-light">Lihat Semua</a>
+                    <a href="{{route('admin.pesanan.table')}}" class="btn-custom btn-custom-light">Lihat Semua</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table-custom">
@@ -92,7 +92,7 @@
                                     <a href="{{route('admin.pesanan.show', $item->id_order)}}" class="text-decoration-none">{{$item->kode_order}}</a>
                                 </td>
                                 <td>{{$item->customer->nama}}</td>
-                                <td>{{$item->tanggal_acara->locale('id')->translatedFormat('d F Y')}}</td>
+                                <td>{{$item->tanggal_acara->format('d-m-Y')}}</td>
                                 <td class="table-amount">Rp {{number_format($item->total_bayar, 0, ',', '.')}}</td>
                                 <td><span class="badge-table {{$item->status_badge}}">{{$item->status_label}}</span></td>
                             </tr>
@@ -114,7 +114,7 @@
             <div class="table-card-custom">
                 <div class="table-header-control">
                     <h5 class="mb-0">Acara 7 Hari ke Depan</h5>
-                    <a href="{{route('admin.produksi')}}" class="btn-custom btn-custom-light">Lihat Produksi</a>
+                    <a href="{{route('admin.produksi.table')}}" class="btn-custom btn-custom-light">Lihat Produksi</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table-custom">
@@ -134,7 +134,7 @@
                                 </td>
                                 <td>{{$item->customer->nama}}</td>
                                 <td>
-                                    {{$item->tanggal_acara->locale('id')->translatedFormat('d F Y')}}
+                                    {{$item->tanggal_acara->format('d-m-Y')}}
                                     <div class="table-user-sub">Pukul {{substr($item->jam_kirim, 0, 5)}}</div>
                                 </td>
                                 <td>

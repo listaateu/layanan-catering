@@ -1,16 +1,6 @@
 @extends('admin.index')
 
 @section('content')
-@php
-    $daftarStatus = [
-        'menunggu_pembayaran' => 'Menunggu Pembayaran',
-        'menunggu_verifikasi' => 'Menunggu Verifikasi',
-        'terkonfirmasi' => 'Terkonfirmasi',
-        'diproses' => 'Diproses',
-        'selesai' => 'Selesai',
-        'dibatalkan' => 'Dibatalkan',
-    ];
-@endphp
 <div>
     <div class="page-header">
         <div>
@@ -31,13 +21,17 @@
             <div class="table-filter-group">
                 <div class="dropdown">
                     <button class="btn-table-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-funnel"></i> {{ $daftarStatus[$status] ?? 'Semua Status' }}
+                        <i class="bi bi-funnel"></i> <span class="text-capitalize">{{ $status ? str_replace('_', ' ', $status) : 'Semua Status' }}</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan')}}">Semua Status</a></li>
-                        @foreach ($daftarStatus as $key => $label)
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan', ['status' => $key])}}">{{$label}}</a></li>
-                        @endforeach
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table')}}">Semua Status</a></li>
+                        {{-- pilihan filter status, statusnya dikirim lewat alamat (?status=...) --}}
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'menunggu_pembayaran'])}}">Menunggu Pembayaran</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'menunggu_verifikasi'])}}">Menunggu Verifikasi</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'terkonfirmasi'])}}">Terkonfirmasi</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'diproses'])}}">Diproses</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'selesai'])}}">Selesai</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'dibatalkan'])}}">Dibatalkan</a></li>
                     </ul>
                 </div>
             </div>
@@ -57,6 +51,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- loop semua pesanan di halaman ini --}}
                     @forelse ($pesanan as $item)
                     <tr>
                         <td>{{$loop->iteration}}</td>
@@ -66,7 +61,7 @@
                             <div class="table-user-sub">{{$item->customer->nomor_telepon}}</div>
                         </td>
                         <td>
-                            {{$item->tanggal_acara->locale('id')->translatedFormat('d F Y')}}
+                            {{$item->tanggal_acara->format('d-m-Y')}}
                             <div class="table-user-sub">Pukul {{substr($item->jam_kirim, 0, 5)}}</div>
                         </td>
                         <td class="table-amount">Rp {{number_format($item->total_bayar, 0, ',', '.')}}</td>
