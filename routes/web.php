@@ -9,13 +9,23 @@ use App\Http\Controllers\admin\ProduksiController as AdminProduksiController;
 use App\Http\Controllers\dapur\DashboardController as DapurDashboardController;
 use App\Http\Controllers\dapur\ProduksiController as DapurProduksiController;
 use App\Http\Controllers\dapur\RiwayatController as DapurRiwayatController;
+use App\Http\Controllers\pelanggan\BerandaController as PelangganBerandaController;
+use App\Http\Controllers\pelanggan\PembayaranController as PelangganPembayaranController;
+use App\Http\Controllers\pelanggan\PesananController as PelangganPesananController;
 use App\Http\Middleware\CekAdminKasir;
 use App\Http\Middleware\CekKepalaDapur;
+use App\Http\Middleware\CekPelanggan;
 use Illuminate\Support\Facades\Route;
 
-// Halaman utama (/) langsung diarahkan ke halaman login
-Route::get('/', function () {
-    return redirect()->route('login');
+// Halaman untuk pelanggan yang boleh dibuka siapa saja (tanpa login)
+// as('pelanggan.') = nama route diawali pelanggan.  (contoh: pelanggan.menu)
+Route::as('pelanggan.')->group(function () {
+    Route::get('/', [PelangganBerandaController::class, 'index'])->name('beranda');
+    Route::get('/menu', [PelangganBerandaController::class, 'menu'])->name('menu');
+    // {id} = nomor paket yang diklik, untuk melihat detailnya
+    Route::get('/menu/{id}', [PelangganBerandaController::class, 'show'])->name('menu.show');
+    Route::get('/tentang', [PelangganBerandaController::class, 'tentang'])->name('tentang');
+    Route::get('/kontak', [PelangganBerandaController::class, 'kontak'])->name('kontak');
 });
 
 // Login Page
@@ -26,6 +36,10 @@ Route::prefix('login')->group(function () {
     Route::get('/', [LoginController::class, 'index'])->name('login');
     Route::post('/', [LoginController::class, 'authenticate'])->name('authenticate');
 });
+
+// Register (buat akun baru, otomatis berperan sebagai pelanggan)
+Route::get('/register', [LoginController::class, 'register'])->name('register');
+Route::post('/register', [LoginController::class, 'registerStore'])->name('register.store');
 
 // logout memakai POST (dikirim lewat form + @csrf) supaya lebih aman
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -82,4 +96,21 @@ Route::prefix('kepala-dapur')->as('dapur.')->middleware([CekKepalaDapur::class])
         Route::get('/', [DapurRiwayatController::class, 'index'])->name('table');
         Route::get('/show/{id}', [DapurRiwayatController::class, 'show'])->name('show');
     });
+});
+
+// Pelanggan (harus login dulu)
+// prefix('pelanggan') = alamat diawali /pelanggan
+// as('pelanggan.') = nama route diawali pelanggan.  (contoh: pelanggan.pesanan.table)
+// middleware = satpam, hanya pelanggan yang boleh masuk, kalau belum login diarahkan ke halaman login
+Route::prefix('pelanggan')->as('pelanggan.')->middleware([CekPelanggan::class])->group(function () {
+    // Pesanan: daftar pesanan saya, form pesan (create, {id} = id paket yang dipilih), simpan pesanan (store), detail (show), batal
+    Route::prefix('pesanan')->as('pesanan.')->group(function () {
+        Route::get('/', [PelangganPesananController::class, 'index'])->name('table');
+        Route::get('/create/{id}', [PelangganPesananController::class, 'create'])->name('create');
+        Route::post('/create', [PelangganPesananController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [PelangganPesananController::class, 'show'])->name('show');
+        Route::put('/batal/{pesanan}', [PelangganPesananController::class, 'batal'])->name('batal');
+    });
+    // Pembayaran: upload bukti transfer untuk satu pesanan
+    Route::post('/pembayaran/{pesanan}', [PelangganPembayaranController::class, 'store'])->name('pembayaran.store');
 });

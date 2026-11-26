@@ -174,7 +174,7 @@
             </div>
             <div>
                 <h2 class="foto-judul">Hidangan untuk setiap acara, tertata dalam satu tempat.</h2>
-                <p class="foto-sub">Kelola paket menu, pesanan, pembayaran, dan produksi dapur dengan mudah.</p>
+                <p class="foto-sub">Pesan, kelola, dan pantau catering dalam satu tempat.</p>
             </div>
         </div>
         <!-- Kiri -->
@@ -201,6 +201,10 @@
                     @include('admin.components.alert')
                     <button type="submit" class="btn w-100 mt-2 bi bi-box-arrow-in-right"><span class="mx-2">Sign In</span></button>
                 </form>
+
+                {{-- link untuk pelanggan yang belum punya akun --}}
+                <p class="text-center mt-3 mb-0 small">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>
+                <p class="text-center mt-1 mb-0 small"><a href="{{ route('pelanggan.beranda') }}">Kembali ke beranda</a></p>
 
                 <p class="footer-text text-center mt-4 mb-0">&copy; {{ date('Y') }} Layanan Catering</p>
             </div>

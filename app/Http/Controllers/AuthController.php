@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -51,8 +53,14 @@ class AuthController extends Controller
                 return redirect()->route('dapur.dashboard')->with(['success' => 'Login berhasil. Selamat Datang, ' . Auth::user()->nama]);
             }
 
-            // role lain (pelanggan) halamannya belum dibuat
-            // jadi dikeluarkan lagi supaya tidak error 500
+            // cek role pelanggan
+            // intended() = kembali ke halaman yang tadi mau dibuka sebelum disuruh login (contoh: form pesan)
+            // kalau tidak ada, pelanggan dibawa ke beranda
+            if (Auth::user()->role === 'pelanggan') {
+                return redirect()->intended(route('pelanggan.beranda'))->with(['success' => 'Login berhasil. Selamat Datang, ' . Auth::user()->nama]);
+            }
+
+            // role yang tidak dikenal dikeluarkan lagi supaya tidak error 500
             Auth::logout();
 
             return redirect()->route('login')->with('error', 'Halaman untuk akun ini belum tersedia');
@@ -60,6 +68,42 @@ class AuthController extends Controller
 
         // kembali ke login kalau email atau password salah
         return redirect()->back()->with('error', 'Email / Password yang anda masukkan salah. Silahkan coba lagi!');
+    }
+
+    // register -> menampilkan halaman daftar akun baru
+    public function register()
+    {
+        return view('register');
+    }
+
+    // registerStore -> menyimpan akun baru (dipanggil saat tombol Daftar ditekan)
+    public function registerStore(Request $request)
+    {
+        // validasi inputan dari form
+        // unique:users,email = email belum boleh dipakai akun lain
+        // confirmed = isi password harus sama dengan kolom password_confirmation
+        $request->validate([
+            'nama'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|min:8|confirmed',
+            'nomor_telepon' => 'required|numeric|digits_between:8,20',
+            'alamat'        => 'required|string',
+        ]);
+
+        // create() = simpan akun baru ke tabel users
+        // Hash::make() = password diacak dulu, tidak disimpan apa adanya
+        // role otomatis pelanggan, jadi tidak ada yang bisa mendaftar sebagai admin lewat form ini
+        User::create([
+            'nama'          => $request->nama,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'nomor_telepon' => $request->nomor_telepon,
+            'alamat'        => $request->alamat,
+            'role'          => 'pelanggan',
+        ]);
+
+        // setelah daftar, pelanggan diminta login
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat, silakan login');
     }
 
     // logout -> keluar dari akun (dipanggil lewat form POST dari tombol logout)
