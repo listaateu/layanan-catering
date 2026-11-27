@@ -52,7 +52,7 @@
                     <h3>Cara <br> Memesan</h3>
                     <p class="about_text1">1. Pilih paket menu lalu klik Pesan Sekarang (login atau daftar dulu kalau belum punya akun).</p>
                     <p class="about_text2">2. Isi jumlah porsi, tanggal, jam, dan alamat pengiriman.</p>
-                    <p class="about_text2">3. Transfer lalu upload bukti pembayaran. Setelah dicek admin, pesananmu langsung dimasak.</p>
+                    <p class="about_text2">3. Datang ke toko dan bayar tunai ke kasir (sebutkan kode pesananmu) paling lambat {{\App\Models\Order::BATAS_BAYAR_HARI}} hari sebelum acara. Setelah dibayar, pesananmu masuk antrean dapur.</p>
                     <a href="{{route('pelanggan.menu')}}" class="boxed_btn">Mulai Pesan</a>
                 </div>
             </div>

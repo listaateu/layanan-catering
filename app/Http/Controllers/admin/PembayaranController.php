@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ProductionSchedule;
 use Illuminate\Http\Request;
@@ -10,88 +11,92 @@ use Illuminate\Support\Facades\Auth;
 
 class PembayaranController extends Controller
 {
-    // index -> menampilkan halaman utama (daftar pembayaran)
-    public function index()
+    //index -> tampilin 2 tabel: pesanan yang belum bayar dan pembayaran tunai yang sudah diterima
+    //bisa dicari berdasarkan kode order, biar kasir tinggal ketik kode yang disebutkan pelanggan
+    public function index(Request $request)
     {
-        // latest() = yang paling baru ada di atas
-        $pembayaran = Payment::latest()->get();
-        return view('admin.pages.pembayaran.pembayaran', compact('pembayaran'));
-    }
+        // pesanan yang lewat batas bayar dibatalkan dulu, biar tidak muncul di daftar belum bayar
+        Order::batalkanKadaluarsa();
 
-    // edit -> menampilkan halaman validasi bukti transfer
-    public function edit($id)
-    {
-        // find = cari 1 data pembayaran berdasarkan id
-        $pembayaran = Payment::find($id);
+        $cari = $request->cari;
 
-        // yang sudah diverifikasi (atau pesanannya sudah dibatalkan) cukup dilihat saja
-        // order = relasi di model Payment, untuk mengambil data pesanan dari pembayaran ini
-        if ($pembayaran->status_verifikasi != 'menunggu' || $pembayaran->order->status_pesanan != 'menunggu_verifikasi') {
-            return redirect()->route('admin.pembayaran.show', $id);
+        $queryBelumBayar = Order::where('status_pesanan', 'menunggu_pembayaran')->orderBy('tanggal_acara');
+        $queryPembayaran = Payment::latest();
+
+        if ($cari) {
+            $queryBelumBayar->where('kode_order', 'like', '%' . $cari . '%');
+            // kode order ada di tabel orders, makanya dicari lewat relasi order
+            $queryPembayaran->whereHas('order', function ($q) use ($cari) {
+                $q->where('kode_order', 'like', '%' . $cari . '%');
+            });
         }
 
-        return view('admin.pages.pembayaran.validasi', compact('pembayaran'));
+        $belumBayar = $queryBelumBayar->get();
+        $pembayaran = $queryPembayaran->get();
+
+        return view('admin.pages.pembayaran.pembayaran', compact('belumBayar', 'pembayaran', 'cari'));
     }
 
-    // update -> menyimpan hasil validasi (diterima / ditolak)
-    // Payment $pembayaran = Laravel otomatis mencari pembayaran sesuai id di alamat URL
-    public function update(Request $request, Payment $pembayaran)
+    //create -> tampilin form terima pembayaran tunai
+    public function create($id)
     {
-        // pilihan hanya boleh diterima atau ditolak
+        Order::batalkanKadaluarsa();
+
+        $pesanan = Order::find($id);
+
+        // kalau sudah dibayar atau dibatalkan, ga perlu form lagi
+        if ($pesanan->status_pesanan != 'menunggu_pembayaran') {
+            return redirect()->route('admin.pembayaran.table')->with('error', 'Pesanan ini tidak sedang menunggu pembayaran');
+        }
+
+        return view('admin.pages.pembayaran.create', compact('pesanan'));
+    }
+
+    //store -> simpan pembayaran tunai, pesanan langsung masuk antrean dapur
+    public function store(Request $request, Order $pesanan)
+    {
+        Order::batalkanKadaluarsa();
+        $pesanan->refresh();
+
         $request->validate([
-            'status_verifikasi' => 'required|in:diterima,ditolak',
+            'jumlah_bayar'  => 'required|numeric|min:1',
+            'tanggal_bayar' => 'required|date|before_or_equal:today',
         ]);
 
-        // pembayaran yang sudah diverifikasi tidak boleh diubah lagi
-        if ($pembayaran->status_verifikasi != 'menunggu') {
-            return redirect()->route('admin.pembayaran.table')
-                ->with('error', 'Pembayaran ini sudah diverifikasi sebelumnya');
+        if ($pesanan->status_pesanan != 'menunggu_pembayaran') {
+            return redirect()->route('admin.pembayaran.table')->with('error', 'Pesanan ini tidak sedang menunggu pembayaran');
         }
 
-        // pesanan yang sudah dibatalkan tidak boleh dihidupkan lagi lewat validasi
-        if ($pembayaran->order->status_pesanan != 'menunggu_verifikasi') {
-            return redirect()->route('admin.pembayaran.table')
-                ->with('error', 'Pesanan ini tidak sedang menunggu verifikasi');
+        // uang yang diterima harus pas sama total pesanan
+        if ($request->jumlah_bayar != $pesanan->total_bayar) {
+            return redirect()->back()->withInput()->with('error', 'Jumlah bayar harus sama dengan total pesanan');
         }
 
-        // simpan hasil validasi di data pembayaran
-        // Auth::user()->id_user = id admin yang sedang login (siapa yang memverifikasi)
-        // date('Y-m-d') = tanggal hari ini
-        $pembayaran->update([
-            'status_verifikasi'  => $request->status_verifikasi,
-            'verified_by'        => Auth::user()->id_user,
-            'tanggal_verifikasi' => date('Y-m-d'),
+        Payment::create([
+            'id_order'      => $pesanan->id_order,
+            'verified_by'   => Auth::user()->id_user,
+            'jumlah_bayar'  => $request->jumlah_bayar,
+            'tanggal_bayar' => $request->tanggal_bayar,
         ]);
 
-        if ($request->status_verifikasi == 'diterima') {
-            // diterima -> pesanan terkonfirmasi dan otomatis masuk antrean dapur
-            $pembayaran->order->update([
-                'status_pesanan' => 'terkonfirmasi',
-            ]);
+        $pesanan->update([
+            'status_pesanan' => 'terkonfirmasi',
+        ]);
 
-            // buat jadwal produksi baru supaya muncul di antrean dapur
-            ProductionSchedule::create([
-                'id_order'        => $pembayaran->id_order,
-                'status_produksi' => 'antrean_dapur',
-            ]);
+        // dibuatin jadwal produksi biar muncul di antrean dapur
+        ProductionSchedule::create([
+            'id_order'        => $pesanan->id_order,
+            'status_produksi' => 'antrean_dapur',
+        ]);
 
-            $pesan = 'Pembayaran diterima, pesanan masuk antrean dapur';
-        } else {
-            // ditolak -> status pesanan kembali ke menunggu pembayaran, pelanggan harus upload ulang bukti transfer
-            $pembayaran->order->update([
-                'status_pesanan' => 'menunggu_pembayaran',
-            ]);
-
-            $pesan = 'Pembayaran ditolak, pelanggan diminta upload ulang bukti transfer';
-        }
-
-        return redirect()->route('admin.pembayaran.table')->with('success', $pesan);
+        return redirect()->route('admin.pembayaran.table')->with('success', 'Pembayaran ' . $pesanan->kode_order . ' diterima, pesanan masuk antrean dapur');
     }
 
-    // show -> menampilkan detail pembayaran (hanya dilihat, tidak bisa diubah)
+    //show -> tampilin detail pembayaran
     public function show($id)
     {
         $pembayaran = Payment::find($id);
+
         return view('admin.pages.pembayaran.show', compact('pembayaran'));
     }
 }

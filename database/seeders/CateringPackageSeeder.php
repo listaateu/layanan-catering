@@ -7,9 +7,6 @@ use App\Models\CateringPackage;
 
 class CateringPackageSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         CateringPackage::create([

@@ -45,8 +45,8 @@
                         <i class="bi bi-cash-stack text-light m-auto fs-2"></i>
                     </div>
                     <div class="card-text align-content-center">
-                        <h5 class="mb-1">Menunggu Verifikasi</h5>
-                        <h6 class="m-0">{{$pembayaranMenunggu}}</h6>
+                        <h5 class="mb-1">Menunggu Pembayaran</h5>
+                        <h6 class="m-0">{{$belumBayar}}</h6>
                     </div>
                 </div>
             </div>

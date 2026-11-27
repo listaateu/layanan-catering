@@ -16,33 +16,17 @@
         </nav>
     </div>
 
-    <div class="row g-4 mb-4">
-        <!-- Bukti Transfer -->
-        <div class="col-12 col-lg-5">
-            <div class="card border-light shadow-sm p-4 h-100">
-                <h5 class="card-title mb-4">Bukti Transfer</h5>
-                @if ($pembayaran->bukti_transfer)
-                <a href="{{asset('storage/' . $pembayaran->bukti_transfer)}}" target="_blank">
-                    <img src="{{asset('storage/' . $pembayaran->bukti_transfer)}}" alt="Bukti transfer" class="img-fluid rounded">
-                </a>
-                <span class="text-muted mt-2">Klik gambar untuk memperbesar.</span>
-                @else
-                <div class="text-center text-muted py-5">
-                    <i class="bi bi-image fs-1"></i>
-                    <p class="mb-0">File bukti transfer tidak ditemukan</p>
-                </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- Detail -->
-        <div class="col-12 col-lg-7">
-            <div class="card border-light shadow-sm p-4 h-100">
+    <div class="row mb-4">
+        <div class="col-12 col-lg-8">
+            <div class="card border-light shadow-sm p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="card-title mb-0">Detail Pembayaran</h5>
-                    <span class="badge-table {{ $pembayaran->status_verifikasi == 'diterima' ? 'success' : ($pembayaran->status_verifikasi == 'ditolak' ? 'failed' : 'pending') }}">
-                        {{ucfirst($pembayaran->status_verifikasi)}}
-                    </span>
+                    <h5 class="card-title mb-0">Pembayaran Tunai</h5>
+                    {{-- kalau pesanan dibatalkan setelah dibayar, kasir diingatkan uangnya perlu dikembalikan --}}
+                    @if ($pembayaran->order->status_pesanan == 'dibatalkan')
+                    <span class="badge-table failed">Pesanan Dibatalkan</span>
+                    @else
+                    <span class="badge-table success">Lunas</span>
+                    @endif
                 </div>
 
                 <div class="mb-3">
@@ -55,16 +39,16 @@
                         <input type="text" class="form-control-custom" value="Rp {{number_format($pembayaran->order->total_bayar, 0, ',', '.')}}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom">Jumlah Transfer</label>
-                        <input type="text" class="form-control-custom" value="Rp {{number_format($pembayaran->jumlah_transfer, 0, ',', '.')}}" readonly>
+                        <label class="form-label-custom">Jumlah Bayar</label>
+                        <input type="text" class="form-control-custom" value="Rp {{number_format($pembayaran->jumlah_bayar, 0, ',', '.')}}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom">Diverifikasi Oleh</label>
+                        <label class="form-label-custom">Diterima Oleh</label>
                         <input type="text" class="form-control-custom" value="{{$pembayaran->verifier->nama ?? '-'}}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom">Tanggal Verifikasi</label>
-                        <input type="text" class="form-control-custom" value="{{$pembayaran->tanggal_verifikasi ? $pembayaran->tanggal_verifikasi->format('d-m-Y') : '-'}}" readonly>
+                        <label class="form-label-custom">Tanggal Bayar</label>
+                        <input type="text" class="form-control-custom" value="{{$pembayaran->tanggal_bayar->format('d-m-Y')}}" readonly>
                     </div>
                 </div>
 

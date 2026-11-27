@@ -19,19 +19,26 @@
         <div class="table-header-control">
             <h5 class="mb-0">Data Pesanan</h5>
             <div class="table-filter-group">
+                {{-- cari berdasarkan kode order, filter status yang dipilih ikut terbawa --}}
+                <form action="{{route('admin.pesanan.table')}}" method="get" class="d-flex gap-2 me-2">
+                    @if ($status)
+                    <input type="hidden" name="status" value="{{$status}}">
+                    @endif
+                    <input type="text" class="form-control-custom" name="cari" value="{{$cari}}" placeholder="Cari kode order">
+                    <button type="submit" class="btn-table-action"><i class="bi bi-search"></i></button>
+                </form>
                 <div class="dropdown">
                     <button class="btn-table-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-funnel"></i> <span class="text-capitalize">{{ $status ? str_replace('_', ' ', $status) : 'Semua Status' }}</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table')}}">Semua Status</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['cari' => $cari])}}">Semua Status</a></li>
                         {{-- pilihan filter status, statusnya dikirim lewat alamat (?status=...) --}}
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'menunggu_pembayaran'])}}">Menunggu Pembayaran</a></li>
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'menunggu_verifikasi'])}}">Menunggu Verifikasi</a></li>
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'terkonfirmasi'])}}">Terkonfirmasi</a></li>
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'diproses'])}}">Diproses</a></li>
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'selesai'])}}">Selesai</a></li>
-                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'dibatalkan'])}}">Dibatalkan</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'menunggu_pembayaran', 'cari' => $cari])}}">Menunggu Pembayaran</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'terkonfirmasi', 'cari' => $cari])}}">Terkonfirmasi</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'diproses', 'cari' => $cari])}}">Diproses</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'selesai', 'cari' => $cari])}}">Selesai</a></li>
+                        <li><a class="dropdown-item" href="{{route('admin.pesanan.table', ['status' => 'dibatalkan', 'cari' => $cari])}}">Dibatalkan</a></li>
                     </ul>
                 </div>
             </div>

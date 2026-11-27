@@ -47,7 +47,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="tanggal_acara">Tanggal Acara <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" name="tanggal_acara" id="tanggal_acara" value="{{old('tanggal_acara')}}" min="{{date('Y-m-d')}}" required>
+                                <input type="date" class="form-control" name="tanggal_acara" id="tanggal_acara" value="{{old('tanggal_acara')}}" min="{{date('Y-m-d', strtotime('+' . \App\Models\Order::MIN_HARI_PESAN . ' days'))}}" required>
+                                <small class="text-muted">Minimal {{\App\Models\Order::MIN_HARI_PESAN}} hari dari hari ini.</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -64,7 +65,8 @@
                         <textarea class="form-control" name="alamat_kirim" id="alamat_kirim" rows="3" required>{{old('alamat_kirim', auth()->user()->alamat)}}</textarea>
                     </div>
 
-                    <p class="text-muted">Total bayar dihitung otomatis: harga per porsi x jumlah porsi.</p>
+                    <p class="text-muted mb-1">Total bayar dihitung otomatis: harga per porsi x jumlah porsi.</p>
+                    <p class="text-muted">Pembayaran tunai di toko. Setelah pesan, datang ke toko paling lambat {{\App\Models\Order::BATAS_BAYAR_HARI}} hari sebelum tanggal acara, kalau tidak pesanan otomatis dibatalkan.</p>
 
                     <button type="submit" class="boxed_btn">Buat Pesanan</button>
                     <a href="{{route('pelanggan.menu')}}" class="boxed_btn_white">Batal</a>

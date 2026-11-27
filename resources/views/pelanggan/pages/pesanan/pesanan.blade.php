@@ -39,7 +39,7 @@
                         </td>
                         <td>{{$item->tanggal_acara->format('d-m-Y')}}</td>
                         <td>Rp {{number_format($item->total_bayar, 0, ',', '.')}}</td>
-                        <td><span class="badge status-{{$item->status_badge}}">{{$item->status_label}}</span></td>
+                        <td><span class="badge status-{{$item->status_badge}}">{{$item->status_label_pelanggan}}</span></td>
                         <td><a href="{{route('pelanggan.pesanan.show', $item->id_order)}}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
                     </tr>
                     @empty

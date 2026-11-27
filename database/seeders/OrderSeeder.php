@@ -12,12 +12,8 @@ use App\Models\ProductionSchedule;
 
 class OrderSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Ambil data yang sudah ada di database (dari UserSeeder & CateringPackageSeeder)
         $pelanggan = User::where('role', 'pelanggan')->first();
         $kasir = User::where('role', 'admin_kasir')->first();
         $dapur = User::where('role', 'kepala_dapur')->first();
@@ -26,7 +22,6 @@ class OrderSeeder extends Seeder
         $prasmanan = CateringPackage::where('nama_paket', 'Paket Prasmanan')->first();
         $snackBox = CateringPackage::where('nama_paket', 'Paket Snack Box')->first();
 
-        // ===== Pesanan 1: baru dibuat, belum bayar =====
         $order1 = Order::create([
             'id_customer' => $pelanggan->id_user,
             'kode_order' => 'ORD-20261123-001',
@@ -44,7 +39,6 @@ class OrderSeeder extends Seeder
             'subtotal' => 750000
         ]);
 
-        // ===== Pesanan 2: sudah upload bukti transfer, menunggu dicek admin =====
         $order2 = Order::create([
             'id_customer' => $pelanggan->id_user,
             'kode_order' => 'ORD-20261123-002',
@@ -52,7 +46,7 @@ class OrderSeeder extends Seeder
             'jam_kirim' => '12:00',
             'alamat_kirim' => 'Jl. Contoh No. 2, Surakarta',
             'total_bayar' => 2700000,
-            'status_pesanan' => 'menunggu_verifikasi'
+            'status_pesanan' => 'menunggu_pembayaran'
         ]);
         OrderItem::create([
             'id_order' => $order2->id_order,
@@ -61,14 +55,7 @@ class OrderSeeder extends Seeder
             'harga_satuan' => 45000,
             'subtotal' => 2700000
         ]);
-        Payment::create([
-            'id_order' => $order2->id_order,
-            'bukti_transfer' => 'bukti/contoh-2.jpg',
-            'jumlah_transfer' => 2700000,
-            'status_verifikasi' => 'menunggu'
-        ]);
 
-        // ===== Pesanan 3: pembayaran diterima, masuk antrean dapur =====
         $order3 = Order::create([
             'id_customer' => $pelanggan->id_user,
             'kode_order' => 'ORD-20261123-003',
@@ -88,17 +75,14 @@ class OrderSeeder extends Seeder
         Payment::create([
             'id_order' => $order3->id_order,
             'verified_by' => $kasir->id_user,
-            'bukti_transfer' => 'bukti/contoh-3.jpg',
-            'jumlah_transfer' => 600000,
-            'status_verifikasi' => 'diterima',
-            'tanggal_verifikasi' => '2026-11-23'
+            'jumlah_bayar' => 600000,
+            'tanggal_bayar' => '2026-11-23'
         ]);
         ProductionSchedule::create([
             'id_order' => $order3->id_order,
             'status_produksi' => 'antrean_dapur'
         ]);
 
-        // ===== Pesanan 4: sedang dimasak oleh kepala dapur =====
         $order4 = Order::create([
             'id_customer' => $pelanggan->id_user,
             'kode_order' => 'ORD-20261123-004',
@@ -118,10 +102,8 @@ class OrderSeeder extends Seeder
         Payment::create([
             'id_order' => $order4->id_order,
             'verified_by' => $kasir->id_user,
-            'bukti_transfer' => 'bukti/contoh-4.jpg',
-            'jumlah_transfer' => 1250000,
-            'status_verifikasi' => 'diterima',
-            'tanggal_verifikasi' => '2026-11-23'
+            'jumlah_bayar' => 1250000,
+            'tanggal_bayar' => '2026-11-23'
         ]);
         ProductionSchedule::create([
             'id_order' => $order4->id_order,

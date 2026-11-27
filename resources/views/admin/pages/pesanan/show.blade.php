@@ -57,13 +57,19 @@
                     <label class="form-label-custom">Pembayaran</label>
                     @if ($pesanan->payment)
                     <div>
-                        <span class="badge-table {{ $pesanan->payment->status_verifikasi == 'diterima' ? 'success' : ($pesanan->payment->status_verifikasi == 'ditolak' ? 'failed' : 'pending') }}">
-                            {{ucfirst($pesanan->payment->status_verifikasi)}}
-                        </span>
-                        <a href="{{ $pesanan->payment->status_verifikasi == 'menunggu' ? route('admin.pembayaran.validasi', $pesanan->payment->id_payment) : route('admin.pembayaran.show', $pesanan->payment->id_payment) }}" class="ms-2 text-decoration-none">Lihat bukti</a>
+                        <span class="badge-table success">Lunas</span>
+                        <span class="ms-2">Rp {{number_format($pesanan->payment->jumlah_bayar, 0, ',', '.')}}, {{$pesanan->payment->tanggal_bayar->format('d-m-Y')}}</span>
+                        <a href="{{route('admin.pembayaran.show', $pesanan->payment->id_payment)}}" class="ms-2 text-decoration-none">Lihat detail</a>
+                    </div>
+                    @elseif ($pesanan->status_pesanan == 'menunggu_pembayaran')
+                    <div>
+                        <input type="text" class="form-control-custom mb-2" value="Belum bayar, batas bayar {{$pesanan->batas_bayar->format('d-m-Y')}}" readonly>
+                        <a href="{{route('admin.pembayaran.create', $pesanan->id_order)}}" class="btn-custom btn-custom-primary">
+                            <i class="bi bi-cash-coin"></i> Terima Pembayaran Tunai
+                        </a>
                     </div>
                     @else
-                    <input type="text" class="form-control-custom" value="Belum ada bukti transfer" readonly>
+                    <input type="text" class="form-control-custom" value="Tidak ada pembayaran" readonly>
                     @endif
                 </div>
                 <div class="mb-4">
@@ -71,8 +77,8 @@
                     <input type="text" class="form-control-custom"
                         value="{{ $pesanan->productionSchedule ? ucwords(str_replace('_', ' ', $pesanan->productionSchedule->status_produksi)) : 'Belum masuk antrean' }}" readonly>
                 </div>
-                @if (in_array($pesanan->status_pesanan, ['menunggu_pembayaran', 'menunggu_verifikasi', 'terkonfirmasi']))
-                <form action="{{route('admin.pesanan.batal', $pesanan->id_order)}}" method="post" onsubmit="return confirm('Pesanan akan dibatalkan dan tidak bisa diproses lagi. Apakah anda yakin?')">
+                @if (in_array($pesanan->status_pesanan, ['menunggu_pembayaran', 'terkonfirmasi']))
+                <form action="{{route('admin.pesanan.batal', $pesanan->id_order)}}" method="post" onsubmit="return confirm('Pesanan akan dibatalkan dan tidak bisa diproses lagi.{{ $pesanan->payment ? ' Pelanggan sudah membayar, kembalikan uangnya langsung.' : '' }} Apakah anda yakin?')">
                     @csrf
                     @method('PUT')
                     <button type="submit" class="btn-custom btn-custom-outline-danger">

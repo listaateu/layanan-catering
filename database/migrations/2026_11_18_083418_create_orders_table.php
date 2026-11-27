@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -19,14 +16,11 @@ return new class extends Migration
             $table->time('jam_kirim');
             $table->text('alamat_kirim');
             $table->decimal('total_bayar', 12, 2)->default(0);
-            $table->enum('status_pesanan', ['menunggu_pembayaran', 'menunggu_verifikasi', 'terkonfirmasi', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu_pembayaran');
+            $table->enum('status_pesanan', ['menunggu_pembayaran', 'terkonfirmasi', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu_pembayaran');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('orders');
